@@ -1,6 +1,6 @@
 {
-  "hooks": [
-    {
+  "hooks": {
+    "check_ros1_apis_python": {
       "description": "Warn when ROS 1 APIs are used in Python files",
       "matcher": "tool_name in ['Write', 'Edit', 'MultiEdit'] AND tool_input.file_path matches '.*\\.py$'",
       "hooks": [
@@ -10,7 +10,7 @@
         }
       ]
     },
-    {
+    "check_ros1_apis_cpp": {
       "description": "Warn when ROS 1 APIs are used in C++ files",
       "matcher": "tool_name in ['Write', 'Edit', 'MultiEdit'] AND (tool_input.file_path matches '.*\\.cpp$' OR tool_input.file_path matches '.*\\.hpp$')",
       "hooks": [
@@ -20,7 +20,7 @@
         }
       ]
     },
-    {
+    "validate_urdf_on_save": {
       "description": "Auto-validate URDF/XACRO on save (if check_urdf is available)",
       "matcher": "tool_name in ['Write', 'Edit'] AND (tool_input.file_path matches '.*\\.urdf$' OR tool_input.file_path matches '.*\\.xacro$')",
       "hooks": [
@@ -30,7 +30,7 @@
         }
       ]
     },
-    {
+    "check_package_xml_deps": {
       "description": "Check package.xml is updated when imports change in Python files",
       "matcher": "tool_name in ['Write', 'Edit'] AND tool_input.file_path matches '.*\\.py$' AND tool_input.file_path matches '.*/my_.*_pkg/.*'",
       "hooks": [
@@ -40,7 +40,7 @@
         }
       ]
     },
-    {
+    "remind_source_workspace": {
       "description": "Remind to source workspace after colcon build",
       "matcher": "tool_name == 'Bash' AND tool_input.command matches '.*colcon build.*'",
       "hooks": [
@@ -50,7 +50,7 @@
         }
       ]
     },
-    {
+    "check_blocking_calls": {
       "description": "Warn about blocking calls in ROS callbacks",
       "matcher": "tool_name in ['Write', 'Edit'] AND tool_input.file_path matches '.*\\.py$'",
       "hooks": [
@@ -60,5 +60,5 @@
         }
       ]
     }
-  ]
+  }
 }

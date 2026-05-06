@@ -6,13 +6,12 @@
   },
   "metadata": {
     "description": "27 specialist sub-agents for ROS 2 development — URDF, Nav2, MoveIt2, TF2, QoS, lifecycle, ros2_control, and more. Built so AI assistants stop hallucinating ROS APIs and start shipping real robots.",
-    "version": "1.0.0",
-    "pluginRoot": "."
+    "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "everything-ros2-claude-code",
-      "source": ".",
+      "source": "everything-ros2-claude-code",
       "version": "1.0.0",
       "category": "robotics"
     }

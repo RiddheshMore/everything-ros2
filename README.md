@@ -3,10 +3,29 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![ROS 2](https://img.shields.io/badge/ROS%202-Humble%20%7C%20Iron%20%7C%20Jazzy%20%7C%20Kilted-blue)](https://docs.ros.org/en/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-orange)](https://docs.anthropic.com/en/docs/claude-code)
+[![Cursor](https://img.shields.io/badge/Cursor-Compatible-blue)](https://cursor.com)
+[![Copilot](https://img.shields.io/badge/Copilot-Compatible-green)](https://github.com/features/copilot)
 
 > **The comprehensive sub-agentic harness for ROS 2 development with AI coding assistants.**
 
 > Dedicated specialist agents for every ROS 2 domain — URDF validation, topic naming, distro compatibility, TF2, Nav2, MoveIt2, QoS, lifecycle nodes, ros2_control, safety systems, real-time performance, and more. Built so AI assistants stop hallucinating ROS APIs and start shipping real robots.
+
+---
+
+## Why This Exists
+
+AI coding assistants fail at ROS 2 for a predictable set of reasons:
+
+- They mix ROS 1 and ROS 2 APIs (e.g., `rospy` instead of `rclpy`)
+- They invent topic names that violate ROS naming conventions
+- They generate URDF with invalid joint/link references
+- They ignore QoS compatibility between publishers and subscribers
+- They write code for `Humble` that only works on `Jazzy`
+- They skip lifecycle node management entirely
+- They hard-code frame IDs instead of using TF2 properly
+- They miss `package.xml` dependencies for the packages they actually import
+
+This repo gives AI coding assistants (Claude Code, Cursor, Copilot, etc.) a **fleet of 27 specialist sub-agents**, each deeply trained in one ROS 2 domain. The orchestrator routes tasks to the right agent, collects results, and guards against the most common failure modes.
 
 ---
 
@@ -16,7 +35,7 @@
 
 - **ROS 2** (Humble, Iron, Jazzy, Kilted, or Rolling)
 - **Python 3.8+**
-- **Claude Code** (desktop or CLI)
+- **Your AI coding assistant** (Claude Code, Cursor, Copilot, or any tool supporting .md agent files)
 - **Git**
 
 ### Installation
@@ -44,19 +63,28 @@ cd everything-ros2-claude-code
 git clone https://github.com/RiddheshMore/everything-ros2-claude-code.git
 cd everything-ros2-claude-code
 
-# Copy agents to Claude
+# For Claude Code users
 cp -r agents ~/.claude/agents/
-
-# Copy skills to Claude
 cp -r skills ~/.claude/skills/
-
-# Copy commands to Claude
 cp -r commands ~/.claude/commands/
-
-# Copy rules to Claude (language-specific)
 cp -r rules/common ~/.claude/rules/common
-cp -r rules/cpp ~/.claude/rules/cpp      # For C++ ROS 2 nodes
-cp -r rules/python ~/.claude/rules/python  # For Python ROS 2 nodes
+cp -r rules/cpp ~/.claude/rules/cpp
+cp -r rules/python ~/.claude/rules/python
+
+# For Cursor users
+cp -r agents ~/.cursor/agents/
+cp -r skills ~/.cursor/skills/
+cp -r commands ~/.cursor/commands/
+
+# For Copilot users (copy to your project)
+cp -r agents .copilot/agents/
+cp -r skills .copilot/skills/
+cp -r commands .copilot/commands/
+
+# For generic AI coding agents
+cp -r agents /path/to/your/agent/config/
+cp -r skills /path/to/your/agent/config/
+cp -r commands /path/to/your/agent/config/
 ```
 
 #### Method 3: Claude Code Marketplace
@@ -71,15 +99,25 @@ In Claude Code, run:
 
 ## Usage
 
+### Supported AI Coding Assistants
+
+| Assistant | Installation Path |
+|-----------|-------------------|
+| **Claude Code** | `~/.claude/agents/` |
+| **Cursor** | `~/.cursor/agents/` |
+| **GitHub Copilot** | `.copilot/agents/` |
+| **VS Code with AI extension** | `.vscode/agents/` |
+| **Generic** | Any path supported by your tool |
+
 ### Basic Workflow
 
-1. **Start Claude Code** in your ROS 2 project directory
+1. **Start your AI coding assistant** in your ROS 2 project directory
 2. **Make a request** - e.g., "Create a new ROS 2 publisher node"
 3. **The orchestrator agent** routes your request to the appropriate specialist agent
 4. **Specialist agents** analyze and validate the code against ROS 2 best practices
 5. **Results** are returned with validation checks and fixes
 
-### Available Commands
+### Available Slash Commands
 
 | Command | Description |
 |---------|-------------|
@@ -92,12 +130,12 @@ In Claude Code, run:
 | `/qos-audit` | Check QoS policy compatibility |
 | `/launch-validate` | Validate launch files |
 | `/interface-check` | Validate message/service/action definitions |
-| `/nav2-config` | Audit Nav2 configuration |
-| `/moveit2-check` | Validate MoveIt2 setup |
-| `/lifecycle-audit` | Check lifecycle node state machine |
-| `/colcon-fix` | Diagnose and fix build errors |
-| `/ros2-new-pkg` | Scaffold a new ROS 2 package |
-| `/ros2-plan` | Plan a new feature with agent consultation |
+| `/nav2-config` | Audit Nav2 configuration and BT plugins |
+| `/moveit2-check` | Validate MoveIt2 setup and planning groups |
+| `/lifecycle-audit` | Check lifecycle node state machine coverage |
+| `/colcon-fix` | Diagnose and fix colcon build errors |
+| `/ros2-new-pkg` | Scaffold new ROS 2 package with best practices |
+| `/ros2-plan` | Plan a new ROS 2 feature with agent consultation |
 
 ### Agent Reference
 
@@ -144,7 +182,7 @@ everything-ros2-claude-code/
 │   ├── urdf-patterns/SKILL.md
 │   ├── topic-naming/SKILL.md
 │   └── ... (25 more skills)
-├── commands/                  # Slash commands for Claude
+├── commands/                  # Slash commands for AI assistants
 ├── rules/                     # Always-follow guidelines
 │   ├── common/               # Language-agnostic rules
 │   ├── cpp/                  # C++ specific rules
@@ -152,16 +190,16 @@ everything-ros2-claude-code/
 ├── hooks/                     # Automation hooks (PostToolUse, PreToolUse)
 ├── contexts/                  # System prompt contexts
 ├── examples/                  # 10 real-world package examples
-│   ├── minimal-publisher/
-│   ├── turtlebot4-navigation/
-│   ├── lifecycle-sensor-driver/
-│   ├── custom-bt-plugin/
-│   ├── micro-ros-esp32/
-│   ├── multi-robot-fleet/
-│   ├── docker-robot-stack/
-│   ├── ros2-control-diffbot/
-│   ├── safety-node/
-│   └── systemd-robot-service/
+│   ├── minimal-publisher/    # C++ & Python pub/sub
+│   ├── turtlebot4-navigation/ # Nav2 with real hardware
+│   ├── lifecycle-sensor-driver/ # Lifecycle node pattern
+│   ├── custom-bt-plugin/     # BehaviorTree.CPP Nav2 plugin
+│   ├── micro-ros-esp32/      # ESP32 + FreeRTOS + micro-ROS
+│   ├── multi-robot-fleet/    # Namespaced multi-robot setup
+│   ├── docker-robot-stack/   # Multi-container ROS 2 stack
+│   ├── ros2-control-diffbot/ # Differential drive with ros2_control
+│   ├── safety-node/          # Safety monitoring system
+│   └── systemd-robot-service/ # systemd services for robots
 ├── test_inputs/              # Test fixtures (ROS 1 examples)
 ├── test_outputs/             # Expected outputs (ROS 2 conversions)
 ├── tests/                    # Agent test suite
@@ -174,11 +212,21 @@ everything-ros2-claude-code/
 
 ### Target ROS 2 Distro
 
-Edit `~/.claude/settings.json` to set your target distro:
+Set your target distro in your AI assistant's settings:
 
+**Claude Code** (`~/.claude/settings.json`):
 ```json
 {
   "globalEnvironmentVariables": {
+    "ROS_DISTRO": "humble"
+  }
+}
+```
+
+**Cursor** (`.cursor/settings.json`):
+```json
+{
+  "env": {
     "ROS_DISTRO": "humble"
   }
 }
@@ -188,7 +236,7 @@ Supported distros: `humble`, `iron`, `jazzy`, `kilted`, `rolling`
 
 ### Custom Agent Configuration
 
-Create `~/.claude/agents/custom-ros2-settings.md`:
+Create a custom settings file in your agent config directory:
 
 ```markdown
 # Custom ROS 2 Settings
@@ -215,7 +263,9 @@ Create `~/.claude/agents/custom-ros2-settings.md`:
 
 ```
 User: Create a Python ROS 2 node that publishes sensor data
+
 Orchestrator -> distro-compat -> interface -> code-reviewer -> security-reviewer
+
 Result: Validated Python node with proper rclpy imports, QoS, and parameters
 ```
 
@@ -223,7 +273,9 @@ Result: Validated Python node with proper rclpy imports, QoS, and parameters
 
 ```
 User: Validate this URDF for a differential drive robot
+
 Orchestrator -> urdf-validator -> tf2-agent -> ros2-control-agent
+
 Result: URDF validated with correct joint/hardware interface definitions
 ```
 
@@ -231,8 +283,18 @@ Result: URDF validated with correct joint/hardware interface definitions
 
 ```
 User: Convert this ROS 1 package to ROS 2
+
 Orchestrator -> ros1-migrator -> colcon-agent -> distro-compat
+
 Result: Converted CMakeLists.txt, package.xml, and launch files
+```
+
+### Example 4: Topic Naming Audit
+
+```
+User: /topic-audit
+
+Result: Finds non-conpliant topic names like "/sensors" (should be "/sensor_data")
 ```
 
 ---
@@ -265,9 +327,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 ### Agent Not Found
 
 ```bash
-# Reinstall agents
+# Reinstall agents for your specific assistant
+# Claude Code
 cp -r agents ~/.claude/agents/
-# Restart Claude Code
+
+# Cursor
+cp -r agents ~/.cursor/agents/
+
+# Copilot
+cp -r agents .copilot/agents/
+
+# Restart your AI assistant
 ```
 
 ### Build Errors
@@ -277,6 +347,10 @@ Use `/colcon-fix` command to diagnose and fix build issues.
 ### Distro API Mismatch
 
 Use `/distro-check` command to verify API compatibility with your ROS 2 distro.
+
+### Topic Naming Issues
+
+Use `/topic-audit` to identify non-conpliant topic names in your workspace.
 
 ---
 

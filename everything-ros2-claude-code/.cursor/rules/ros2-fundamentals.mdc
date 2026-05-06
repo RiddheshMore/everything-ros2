@@ -1,0 +1,68 @@
+---
+description: Core ROS 2 development rules — prevents the most common AI coding mistakes (ROS 1 API usage, missing parameter declarations, hardcoded frame IDs, wrong QoS)
+globs: []
+alwaysApply: true
+---
+
+# ROS 2 Core Rules
+
+## CRITICAL — Never Violate
+
+1. **NEVER use ROS 1 APIs.** `rospy`, `roscpp`, `roslaunch` (XML), `rostopic`, `rospkg` are ROS 1.
+   - ROS 2 Python: `rclpy`
+   - ROS 2 C++: `rclcpp`
+   - ROS 2 launch: Python-based `.launch.py`
+
+2. **Always declare parameters before getting them.**
+   ```python
+   # WRONG
+   self.get_parameter('my_param')
+
+   # CORRECT
+   self.declare_parameter('my_param', 'default_value')
+   self.get_parameter('my_param').get_parameter_value().string_value
+   ```
+
+3. **Never hardcode frame IDs.** Always accept them as parameters.
+
+4. **Always validate URDF** with `check_urdf` before using in launch files.
+
+5. **Check target distro before using any API.** APIs differ between Humble, Jazzy, and Rolling.
+
+6. **Always specify QoS** for publishers and subscribers. Never rely on defaults for sensor data.
+   ```python
+   # WRONG for sensor data
+   self.create_subscription(LaserScan, '/scan', cb, 10)
+
+   # CORRECT
+   from rclpy.qos import qos_profile_sensor_data
+   self.create_subscription(LaserScan, '/scan', cb, qos_profile_sensor_data)
+   ```
+
+7. **Always add dependencies to package.xml.** If you import it, it must be in `<depend>`.
+
+8. **Use relative topic names** so namespace remapping works.
+   ```python
+   # WRONG — breaks namespace remapping
+   self.create_publisher(String, '/my_topic', 10)
+
+   # CORRECT — resolves to /<namespace>/my_topic
+   self.create_publisher(String, 'my_topic', 10)
+   ```
+
+9. **Never block in callbacks** — no `time.sleep()` or blocking I/O.
+
+10. **Always use `use_sim_time` parameter** for simulation compatibility.
+
+## Naming Conventions
+
+- Node names: `snake_case` (no leading slash)
+- Topic names: `snake_case`, relative unless explicitly absolute
+- Package names: `snake_case` with underscores (no hyphens)
+- Message types: `CamelCase.msg`
+- Service types: `CamelCase.srv`
+- Action types: `CamelCase.action`
+
+## Available Specialist Agents
+
+See `AGENTS.md` for the full list of 27 specialist agents covering URDF, TF2, Nav2, MoveIt2, QoS, lifecycle, ros2_control, DDS, security, testing, and more.

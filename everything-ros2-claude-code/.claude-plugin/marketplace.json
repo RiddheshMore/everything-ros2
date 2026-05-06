@@ -1,0 +1,20 @@
+{
+  "name": "everything-ros2",
+  "owner": {
+    "name": "RiddheshMore",
+    "email": "riddhesh@example.com"
+  },
+  "metadata": {
+    "description": "27 specialist sub-agents for ROS 2 development — URDF, Nav2, MoveIt2, TF2, QoS, lifecycle, ros2_control, and more. Built so AI assistants stop hallucinating ROS APIs and start shipping real robots.",
+    "version": "1.0.0",
+    "pluginRoot": "."
+  },
+  "plugins": [
+    {
+      "name": "everything-ros2-claude-code",
+      "source": ".",
+      "version": "1.0.0",
+      "category": "robotics"
+    }
+  ]
+}

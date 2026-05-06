@@ -2,9 +2,13 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![ROS 2](https://img.shields.io/badge/ROS%202-Humble%20%7C%20Iron%20%7C%20Jazzy%20%7C%20Kilted-blue)](https://docs.ros.org/en/)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-orange)](https://docs.anthropic.com/en/docs/claude-code)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-orange)](https://docs.anthropic.com/en/docs/claude-code)
 [![Cursor](https://img.shields.io/badge/Cursor-Compatible-blue)](https://cursor.com)
 [![Copilot](https://img.shields.io/badge/Copilot-Compatible-green)](https://github.com/features/copilot)
+[![Windsurf](https://img.shields.io/badge/Windsurf-Compatible-teal)](https://windsurf.com)
+[![Cline](https://img.shields.io/badge/Cline-Compatible-purple)](https://cline.bot)
+[![Gemini](https://img.shields.io/badge/Gemini%20Code%20Assist-Compatible-yellow)](https://cloud.google.com/gemini/docs/codeassist/overview)
+[![Codex](https://img.shields.io/badge/OpenAI%20Codex-Compatible-black)](https://openai.com/index/codex/)
 
 > **The comprehensive sub-agentic harness for ROS 2 development with AI coding assistants.**
 
@@ -25,7 +29,7 @@ AI coding assistants fail at ROS 2 for a predictable set of reasons:
 - They hard-code frame IDs instead of using TF2 properly
 - They miss `package.xml` dependencies for the packages they actually import
 
-This repo gives AI coding assistants (Claude Code, Cursor, Copilot, etc.) a **fleet of 27 specialist sub-agents**, each deeply trained in one ROS 2 domain. The orchestrator routes tasks to the right agent, collects results, and guards against the most common failure modes.
+This repo gives AI coding assistants (Claude Code, Cursor, Copilot, Windsurf, Cline, Gemini, Codex) a **fleet of 27 specialist sub-agents**, each deeply trained in one ROS 2 domain. The orchestrator routes tasks to the right agent, collects results, and guards against the most common failure modes.
 
 ---
 
@@ -40,23 +44,38 @@ This repo gives AI coding assistants (Claude Code, Cursor, Copilot, etc.) a **fl
 
 ### Installation
 
-#### Method 1: Install Script (Recommended)
+#### Method 1: Claude Code Plugin (Recommended for Claude Code)
+
+In Claude Code, run these as **two separate commands**:
+```
+/plugin marketplace add RiddheshMore/everything-ros2-claude-code
+```
+```
+/plugin install everything-ros2-claude-code
+```
+
+#### Method 2: Install Script (Recommended for all other agents)
 
 ```bash
 # Clone this repository
 git clone https://github.com/RiddheshMore/everything-ros2-claude-code.git
 cd everything-ros2-claude-code
 
-# Run the install script
-./install.sh
+# Install for your AI coding agent
+./install.sh --target claude      # Claude Code
+./install.sh --target cursor      # Cursor IDE
+./install.sh --target copilot     # GitHub Copilot
+./install.sh --target windsurf    # Windsurf / Cascade
+./install.sh --target cline       # Cline
+./install.sh --target gemini      # Gemini Code Assist
+./install.sh --target codex       # OpenAI Codex
+./install.sh --target all         # Install for ALL agents
 
-# Or install specific components
-./install.sh agents      # Install only agents
-./install.sh skills      # Install only skills
-./install.sh commands    # Install only commands
+# Preview what will be installed without writing files
+./install.sh --target cursor --dry-run
 ```
 
-#### Method 2: Manual Installation
+#### Method 3: Manual Installation
 
 ```bash
 # Clone the repository
@@ -71,28 +90,28 @@ cp -r rules/common ~/.claude/rules/common
 cp -r rules/cpp ~/.claude/rules/cpp
 cp -r rules/python ~/.claude/rules/python
 
-# For Cursor users
-cp -r agents ~/.cursor/agents/
-cp -r skills ~/.cursor/skills/
-cp -r commands ~/.cursor/commands/
+# For Cursor users — copy .mdc rules to your project
+cp -r .cursor/rules/*.mdc /path/to/your/project/.cursor/rules/
+cp AGENTS.md /path/to/your/project/
 
-# For Copilot users (copy to your project)
-cp -r agents .copilot/agents/
-cp -r skills .copilot/skills/
-cp -r commands .copilot/commands/
+# For GitHub Copilot users
+cp .github/copilot-instructions.md /path/to/your/project/.github/
+cp AGENTS.md /path/to/your/project/
 
-# For generic AI coding agents
-cp -r agents /path/to/your/agent/config/
-cp -r skills /path/to/your/agent/config/
-cp -r commands /path/to/your/agent/config/
-```
+# For Windsurf users
+cp -r .windsurf/rules/ /path/to/your/project/.windsurf/rules/
+cp AGENTS.md /path/to/your/project/
 
-#### Method 3: Claude Code Marketplace
+# For Cline users
+cp -r .clinerules/ /path/to/your/project/.clinerules/
+cp AGENTS.md /path/to/your/project/
 
-In Claude Code, run:
-```
-/plugin marketplace add RiddheshMore/everything-ros2-claude-code
-/plugin install everything-ros2-claude-code
+# For Gemini Code Assist users
+cp GEMINI.md /path/to/your/project/
+cp AGENTS.md /path/to/your/project/
+
+# For OpenAI Codex users
+cp AGENTS.md /path/to/your/project/
 ```
 
 ---
@@ -101,13 +120,15 @@ In Claude Code, run:
 
 ### Supported AI Coding Assistants
 
-| Assistant | Installation Path |
-|-----------|-------------------|
-| **Claude Code** | `~/.claude/agents/` |
-| **Cursor** | `~/.cursor/agents/` |
-| **GitHub Copilot** | `.copilot/agents/` |
-| **VS Code with AI extension** | `.vscode/agents/` |
-| **Generic** | Any path supported by your tool |
+| Assistant | Config Format | Auto-Detected |
+|-----------|--------------|---------------|
+| **Claude Code** | `.claude-plugin/plugin.json` + `agents/` + `skills/` | ✅ Plugin system |
+| **Cursor** | `.cursor/rules/*.mdc` | ✅ Glob + always-on |
+| **GitHub Copilot** | `.github/copilot-instructions.md` + `AGENTS.md` | ✅ Auto-injected |
+| **Windsurf** | `.windsurf/rules/ros2-rules.md` | ✅ Cascade reads rules |
+| **Cline** | `.clinerules/ros2-rules.md` | ✅ System prompt injection |
+| **Gemini Code Assist** | `GEMINI.md` | ✅ Project context |
+| **OpenAI Codex** | `AGENTS.md` | ✅ Native support |
 
 ### Basic Workflow
 
@@ -327,17 +348,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 ### Agent Not Found
 
 ```bash
-# Reinstall agents for your specific assistant
-# Claude Code
-cp -r agents ~/.claude/agents/
+# Reinstall for your specific assistant
+./install.sh --target claude     # Claude Code
+./install.sh --target cursor     # Cursor
+./install.sh --target copilot    # Copilot
+./install.sh --target windsurf   # Windsurf
+./install.sh --target cline      # Cline
+./install.sh --target gemini     # Gemini
+./install.sh --target codex      # Codex
 
-# Cursor
-cp -r agents ~/.cursor/agents/
+# Or reinstall for ALL agents
+./install.sh --target all
 
-# Copilot
-cp -r agents .copilot/agents/
-
-# Restart your AI assistant
+# Restart your AI assistant after installation
 ```
 
 ### Build Errors

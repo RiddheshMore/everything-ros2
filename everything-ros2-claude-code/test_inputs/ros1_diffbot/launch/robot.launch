@@ -1,0 +1,35 @@
+<!-- ROS1 robot launch file -->
+<launch>
+  <!-- Robot description -->
+  <param name="robot_description"
+         textfile="$(find test_robot)/urdf/robot.urdf"/>
+
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher"
+        type="robot_state_publisher"
+        name="robot_state_publisher"
+        output="screen"/>
+
+  <!-- Differential drive node -->
+  <node pkg="test_robot"
+        type="diff_drive_node"
+        name="diff_drive_node"
+        output="screen">
+    <param name="wheel_separation" value="0.4"/>
+    <param name="wheel_radius" value="0.05"/>
+    <remap from="/cmd_vel" to="/robot/cmd_vel"/>
+  </node>
+
+  <!-- Odometry monitor (Python) -->
+  <node pkg="test_robot"
+        type="odom_publisher.py"
+        name="odom_monitor"
+        output="screen">
+    <param name="log_rate" value="1.0"/>
+  </node>
+
+  <!-- Include sensor launch -->
+  <include file="$(find test_robot)/launch/sensors.launch">
+    <arg name="use_lidar" value="true"/>
+  </include>
+</launch>

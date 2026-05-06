@@ -1,0 +1,23 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - dependabot
+  categories:
+    - title: New Agents 🚀
+      labels:
+        - new-agent
+    - title: New Skills 📚
+      labels:
+        - new-skill
+    - title: Bug Fixes 🐛
+      labels:
+        - bug
+        - bugfix
+    - title: Documentation 📖
+      labels:
+        - documentation
+    - title: Other Changes
+      labels:
+        - "*"

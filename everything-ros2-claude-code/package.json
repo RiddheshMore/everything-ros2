@@ -1,0 +1,52 @@
+{
+  "name": "everything-ros2-claude-code",
+  "version": "1.0.0",
+  "description": "Sub-agentic harness for ROS 2 development with AI coding assistants",
+  "keywords": [
+    "ros2",
+    "ros",
+    "robotics",
+    "claude-code",
+    "ai-agents",
+    "claude",
+    "anthropic",
+    "urdf",
+    "nav2",
+    "moveit2"
+  ],
+  "homepage": "https://github.com/your-username/everything-ros2-claude-code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/everything-ros2-claude-code.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "install:claude": "bash install.sh --target claude",
+    "install:cursor": "bash install.sh --target cursor",
+    "install:codex": "bash install.sh --target codex",
+    "dry-run": "bash install.sh --dry-run",
+    "test": "node tests/run-all.js",
+    "test:hooks": "node tests/hooks/hooks.test.js"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "agents/",
+    "commands/",
+    "contexts/",
+    "examples/",
+    "hooks/",
+    "mcp-configs/",
+    "rules/",
+    "scripts/",
+    "skills/",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "install.sh"
+  ]
+}

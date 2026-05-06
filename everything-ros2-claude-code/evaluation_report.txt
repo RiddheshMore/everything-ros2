@@ -1,0 +1,46 @@
+ROS 2 Agent Evaluation Report
+==================================================
+
+Overall Summary:
+  Total Tests: 6
+  Average Accuracy: 0.71
+  Average Completeness: 0.06
+  Average Response Time: 0.000s
+
+Per-Agent Performance:
+------------------------------
+@urdf-validator:
+  Tests: 1
+  Avg Accuracy: 1.00
+  Avg Completeness: 0.00
+  Avg Response Time: 0.000s
+
+@ros2-control-agent:
+  Tests: 1
+  Avg Accuracy: 0.75
+  Avg Completeness: 0.00
+  Avg Response Time: 0.000s
+
+@safety-agent:
+  Tests: 1
+  Avg Accuracy: 0.50
+  Avg Completeness: 0.33
+  Avg Response Time: 0.000s
+
+@realtime-agent:
+  Tests: 1
+  Avg Accuracy: 0.75
+  Avg Completeness: 0.00
+  Avg Response Time: 0.000s
+
+@hardware-compat-agent:
+  Tests: 1
+  Avg Accuracy: 0.50
+  Avg Completeness: 0.00
+  Avg Response Time: 0.000s
+
+@ubuntu-system-agent:
+  Tests: 1
+  Avg Accuracy: 0.75
+  Avg Completeness: 0.00
+  Avg Response Time: 0.000s

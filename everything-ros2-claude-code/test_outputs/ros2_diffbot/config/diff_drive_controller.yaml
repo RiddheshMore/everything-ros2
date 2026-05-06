@@ -1,0 +1,64 @@
+# diff_drive_controller configuration for test_robot
+# Targets: ROS2 Humble with ros2_controllers
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz — control loop frequency
+    use_sim_time: false
+
+    # Controllers to load
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+diff_drive_controller:
+  ros__parameters:
+    # Joint names — MUST exactly match URDF joint names
+    left_wheel_names:  [left_wheel_joint]
+    right_wheel_names: [right_wheel_joint]
+
+    # Physical dimensions (must match physical robot)
+    wheel_separation: 0.4   # meters — distance between wheel centerlines
+    wheel_radius: 0.1       # meters — from URDF cylinder radius
+
+    # Velocity limits (matched to <limit> in URDF)
+    max_wheel_velocity: 5.0        # rad/s
+    max_wheel_acceleration: 10.0   # rad/s²
+
+    # Command interface
+    # use_stamped_vel: false means the controller subscribes to geometry_msgs/Twist
+    # Set to true if using geometry_msgs/TwistStamped
+    use_stamped_vel: false
+
+    # Odometry
+    publish_rate: 50.0             # Hz — odometry publish frequency
+    odom_frame_id: odom            # REP-105: odom frame
+    base_frame_id: base_link       # REP-105: robot base frame
+    publish_odom: true
+    publish_odom_tf: true          # Broadcast odom → base_link TF
+
+    # Velocity limits for cmd_vel
+    linear:
+      x:
+        max_velocity:     1.0    # m/s
+        min_velocity:    -1.0
+        max_acceleration: 1.0    # m/s²
+        max_jerk:         10.0   # m/s³
+
+    angular:
+      z:
+        max_velocity:     2.0    # rad/s
+        min_velocity:    -2.0
+        max_acceleration: 2.0    # rad/s²
+
+joint_state_broadcaster:
+  ros__parameters:
+    # Broadcast position and velocity for both wheel joints
+    joints:
+      - left_wheel_joint
+      - right_wheel_joint
+    interfaces:
+      - position
+      - velocity

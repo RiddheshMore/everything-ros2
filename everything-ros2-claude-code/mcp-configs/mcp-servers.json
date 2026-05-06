@@ -1,0 +1,61 @@
+{
+  "_comment": "MCP server configurations for ROS 2 development with Claude Code.",
+  "_usage": "Copy desired entries into your ~/.claude.json mcpServers section.",
+
+  "mcpServers": {
+
+    "ros2-docs": {
+      "_description": "Search ROS 2 documentation (docs.ros.org). Useful for distro-specific API lookups.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "env": {
+        "ALLOWED_DOMAINS": "docs.ros.org,wiki.ros.org,answers.ros.org,github.com/ros2"
+      }
+    },
+
+    "filesystem-ros2-workspace": {
+      "_description": "Give Claude Code access to your ROS 2 workspace.",
+      "_setup": "Replace /home/user/ros2_ws with your actual workspace path.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/user/ros2_ws/src"
+      ]
+    },
+
+    "github-ros2": {
+      "_description": "Search GitHub for ROS 2 package examples and issues.",
+      "_setup": "Set GITHUB_PERSONAL_ACCESS_TOKEN in your environment.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
+      }
+    },
+
+    "sequential-thinking": {
+      "_description": "Multi-step reasoning for complex ROS 2 architecture decisions.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+
+    "memory": {
+      "_description": "Persist ROS 2 project context across sessions (robot name, distro, custom topics).",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    }
+  },
+
+  "_ros2_context_to_store_in_memory": {
+    "_description": "Use the memory MCP server to store these project-specific facts",
+    "examples": [
+      "This project targets ROS 2 Humble",
+      "Robot name: my_robot, base_frame: base_link, laser_frame: laser_link",
+      "Using FastDDS with custom config at /etc/ros2/fastdds.xml",
+      "Nav2 config: smac_hybrid planner + regulated_pure_pursuit controller",
+      "Custom interfaces in package: my_robot_interfaces",
+      "Multi-robot: robot1, robot2 — each has own namespace"
+    ]
+  }
+}

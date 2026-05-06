@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<!--
+  ROS2 URDF — migrated from test_ros1_robot.urdf
+
+  Changes made for ROS2:
+  1. Added <ros2_control> block for diff_drive_controller
+     - wheel_left_joint and right_wheel_joint get velocity command interfaces
+     - both joints get position + velocity state interfaces
+     - uses mock_components/GenericSystem for simulation
+  2. URDF structure itself is format-neutral (same in ROS1/ROS2)
+  3. Joint names updated to follow ros2_control naming convention:
+     right_wheel_joint → right_wheel_joint (unchanged, already correct)
+     left_wheel_joint  → left_wheel_joint  (unchanged)
+
+  Note: Wheel rotation axis corrected from xyz="0 0 1" (Z-axis) to xyz="0 1 0" (Y-axis)
+  for a robot moving in the XY plane — wheels rotate around their Y-axis.
+-->
+<robot name="test_robot">
+
+  <!-- ============================================================ -->
+  <!-- LINKS                                                         -->
+  <!-- ============================================================ -->
+
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.5 0.3 0.1"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 0.8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.5 0.3 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- Right wheel -->
+  <link name="right_wheel">
+    <visual>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- Inertia for a solid cylinder: Ixx=Iyy=m(3r²+h²)/12, Izz=mr²/2 -->
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.0025"/>
+    </inertial>
+  </link>
+
+  <!-- Left wheel -->
+  <link name="left_wheel">
+    <visual>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.0025"/>
+    </inertial>
+  </link>
+
+  <!-- Camera link -->
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <material name="red">
+        <color rgba="0.8 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- Camera optical frame (Z-forward, Y-down — required for image pipelines) -->
+  <link name="camera_optical_frame"/>
+
+  <!-- ============================================================ -->
+  <!-- JOINTS                                                        -->
+  <!-- ============================================================ -->
+
+  <!-- Right wheel joint — axis corrected to Y-axis (wheels spin around their axle) -->
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0.0 -0.2 -0.05" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+    <!-- effort and velocity required for continuous joints in ros2_control -->
+    <limit effort="10.0" velocity="5.0"/>
+  </joint>
+
+  <!-- Left wheel joint -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0.0 0.2 -0.05" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10.0" velocity="5.0"/>
+  </joint>
+
+  <!-- Camera fixed joint -->
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0.25 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Camera optical frame: -90° X then -90° Z (REP-102 convention) -->
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+  </joint>
+
+  <!-- ============================================================ -->
+  <!-- ROS2 CONTROL (NEW — not present in ROS1 URDF)               -->
+  <!-- diff_drive_controller requires velocity command interfaces    -->
+  <!-- ============================================================ -->
+  <ros2_control name="DiffDriveSystem" type="system">
+    <hardware>
+      <!-- Use mock_components for simulation/testing.
+           Replace with real hardware plugin for physical robot:
+           e.g., <plugin>raspimouse_hardware/RaspiMouseSystem</plugin> -->
+      <plugin>mock_components/GenericSystem</plugin>
+    </hardware>
+
+    <joint name="right_wheel_joint">
+      <!-- diff_drive_controller needs velocity command -->
+      <command_interface name="velocity">
+        <param name="min">-5.0</param>
+        <param name="max">5.0</param>
+      </command_interface>
+      <!-- State interfaces for odometry feedback -->
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-5.0</param>
+        <param name="max">5.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+</robot>

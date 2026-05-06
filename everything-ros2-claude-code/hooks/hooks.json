@@ -1,0 +1,64 @@
+{
+  "hooks": [
+    {
+      "description": "Warn when ROS 1 APIs are used in Python files",
+      "matcher": "tool_name in ['Write', 'Edit', 'MultiEdit'] AND tool_input.file_path matches '.*\\.py$'",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node scripts/hooks/check-ros1-apis.js \"$TOOL_INPUT_FILE_PATH\""
+        }
+      ]
+    },
+    {
+      "description": "Warn when ROS 1 APIs are used in C++ files",
+      "matcher": "tool_name in ['Write', 'Edit', 'MultiEdit'] AND (tool_input.file_path matches '.*\\.cpp$' OR tool_input.file_path matches '.*\\.hpp$')",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node scripts/hooks/check-ros1-apis-cpp.js \"$TOOL_INPUT_FILE_PATH\""
+        }
+      ]
+    },
+    {
+      "description": "Auto-validate URDF/XACRO on save (if check_urdf is available)",
+      "matcher": "tool_name in ['Write', 'Edit'] AND (tool_input.file_path matches '.*\\.urdf$' OR tool_input.file_path matches '.*\\.xacro$')",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node scripts/hooks/validate-urdf.js \"$TOOL_INPUT_FILE_PATH\""
+        }
+      ]
+    },
+    {
+      "description": "Check package.xml is updated when imports change in Python files",
+      "matcher": "tool_name in ['Write', 'Edit'] AND tool_input.file_path matches '.*\\.py$' AND tool_input.file_path matches '.*/my_.*_pkg/.*'",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node scripts/hooks/check-package-xml-deps.js \"$TOOL_INPUT_FILE_PATH\""
+        }
+      ]
+    },
+    {
+      "description": "Remind to source workspace after colcon build",
+      "matcher": "tool_name == 'Bash' AND tool_input.command matches '.*colcon build.*'",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "echo '[ROS 2 Hook] After build completes: source install/setup.bash' >&2"
+        }
+      ]
+    },
+    {
+      "description": "Warn about blocking calls in ROS callbacks",
+      "matcher": "tool_name in ['Write', 'Edit'] AND tool_input.file_path matches '.*\\.py$'",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node scripts/hooks/check-blocking-calls.js \"$TOOL_INPUT_FILE_PATH\""
+        }
+      ]
+    }
+  ]
+}

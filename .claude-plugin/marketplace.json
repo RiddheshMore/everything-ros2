@@ -11,11 +11,7 @@
   "plugins": [
     {
       "name": "everything-ros2-claude-code",
-      "source": {
-        "source": "git-subdir",
-        "repo": "RiddheshMore/everything-ros2-claude-code",
-        "path": "everything-ros2-claude-code"
-      },
+      "source": "./everything-ros2-claude-code",
       "version": "1.0.0",
       "category": "robotics"
     }

@@ -183,34 +183,79 @@ install_cursor() {
 
 # ── Install function for Codex ────────────────────────────────────────────────
 install_codex() {
-  echo -e "${BOLD}Installing for OpenAI Codex...${RESET}"
+  local CODEX_DIR="${HOME}/.codex"
+  local AGENTS_DIR="${CODEX_DIR}/agents"
+  local COMMANDS_DIR="${CODEX_DIR}/commands"
+  local RULES_DIR="${CODEX_DIR}/rules"
+  local SKILLS_DIR="${CODEX_DIR}/skills"
 
-  local CODEX_DIR="${PWD}/.codex"
-  do_mkdir "${CODEX_DIR}/agents"
-  do_mkdir "${CODEX_DIR}/commands"
-  do_mkdir "${CODEX_DIR}/rules"
-  do_mkdir "${CODEX_DIR}/skills"
+  echo -e "${BOLD}Installing for OpenAI Codex (${CODEX_DIR})...${RESET}"
 
+  # Agents
+  do_mkdir "$AGENTS_DIR"
   for agent in "${SCRIPT_DIR}/agents/"*.md; do
     [[ -f "$agent" ]] || continue
-    do_copy "$agent" "${CODEX_DIR}/agents/$(basename "$agent")"
+    do_copy "$agent" "${AGENTS_DIR}/$(basename "$agent")"
     success "Agent: $(basename "$agent")"
   done
 
-  if [[ "$AGENTS_ONLY" != true ]]; then
-    for cmd in "${SCRIPT_DIR}/commands/"*.md; do
-      [[ -f "$cmd" ]] || continue
-      do_copy "$cmd" "${CODEX_DIR}/commands/$(basename "$cmd")"
-    done
-    for rule in "${SCRIPT_DIR}/rules/common/"*.md; do
-      [[ -f "$rule" ]] || continue
-      do_copy "$rule" "${CODEX_DIR}/rules/$(basename "$rule")"
-    done
+  if [[ "$AGENTS_ONLY" == true ]]; then
+    success "Agents installed (--agents-only mode)."
+    return
   fi
 
-  # AGENTS.md at root is the primary entry point for Codex
-  do_copy "${SCRIPT_DIR}/AGENTS.md" "${PWD}/AGENTS.md"
-  success "AGENTS.md → project root"
+  # Commands
+  do_mkdir "$COMMANDS_DIR"
+  for cmd in "${SCRIPT_DIR}/commands/"*.md; do
+    [[ -f "$cmd" ]] || continue
+    do_copy "$cmd" "${COMMANDS_DIR}/$(basename "$cmd")"
+    success "Command: /$(basename "${cmd%.md}")"
+  done
+
+  # Rules
+  do_mkdir "$RULES_DIR"
+  for rule in "${SCRIPT_DIR}/rules/common/"*.md; do
+    [[ -f "$rule" ]] || continue
+    do_copy "$rule" "${RULES_DIR}/$(basename "$rule")"
+    success "Rule (common): $(basename "$rule")"
+  done
+  for lang in cpp python; do
+    for rule in "${SCRIPT_DIR}/rules/${lang}/"*.md; do
+      [[ -f "$rule" ]] || continue
+      do_copy "$rule" "${RULES_DIR}/$(basename "$rule")"
+      success "Rule (${lang}): $(basename "$rule")"
+    done
+  done
+
+  # Skills
+  do_mkdir "$SKILLS_DIR"
+  for skill_dir in "${SCRIPT_DIR}/skills/"*/; do
+    local skill_name=$(basename "$skill_dir")
+    local skill_file="${skill_dir}SKILL.md"
+    if [[ -f "$skill_file" ]]; then
+      do_mkdir "${SKILLS_DIR}/${skill_name}"
+      do_copy "$skill_file" "${SKILLS_DIR}/${skill_name}/SKILL.md"
+      success "Skill: ${skill_name}"
+    fi
+  done
+
+  # Hooks
+  if [[ "$SKIP_HOOKS" == false ]]; then
+    local src_hooks="${SCRIPT_DIR}/hooks/hooks.json"
+    if [[ -f "${CODEX_DIR}/hooks.json" ]]; then
+      warn "~/.codex/hooks.json already exists — merging not yet automated."
+      warn "Manually merge ${src_hooks} into ${CODEX_DIR}/hooks.json"
+    else
+      do_copy "$src_hooks" "${CODEX_DIR}/hooks.json"
+      success "Hooks installed: ~/.codex/hooks.json"
+    fi
+    do_mkdir "${CODEX_DIR}/scripts/ros2-hooks"
+    for script in "${SCRIPT_DIR}/scripts/hooks/"*.js; do
+      [[ -f "$script" ]] || continue
+      do_copy "$script" "${CODEX_DIR}/scripts/ros2-hooks/$(basename "$script")"
+      success "Hook script: $(basename "$script")"
+    done
+  fi
 }
 
 # ── Install function for GitHub Copilot ───────────────────────────────────────

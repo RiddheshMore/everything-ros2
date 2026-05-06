@@ -1,6 +1,6 @@
 {
   "name": "everything-ros2-claude-code",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sub-agentic harness for ROS 2 development with 27 specialist agents covering URDF, Nav2, MoveIt2, TF2, QoS, lifecycle, ros2_control, DDS, security, and more.",
   "author": {
     "name": "RiddheshMore",

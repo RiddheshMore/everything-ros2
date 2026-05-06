@@ -12,7 +12,7 @@
     {
       "name": "everything-ros2-claude-code",
       "source": "./everything-ros2-claude-code",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "robotics"
     }
   ]
